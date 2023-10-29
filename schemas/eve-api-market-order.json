@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "EVE API market order schema",
+    "title": "EveAPIMarketOrder",
     "type": "object",
     "properties": {
         "duration": {

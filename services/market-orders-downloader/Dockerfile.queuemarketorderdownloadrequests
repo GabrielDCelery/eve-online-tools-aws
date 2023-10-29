@@ -1,0 +1,19 @@
+FROM node:18 as transpiler
+WORKDIR /usr/app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM node:18 as dependency_installer
+WORKDIR /usr/app
+COPY package*.json ./
+RUN npm install --omit=dev
+
+FROM node:18 as final
+WORKDIR /opt
+COPY --from=transpiler /usr/app/dist/ ./
+COPY --from=dependency_installer /usr/app/ ./
+EXPOSE 8080
+
+CMD [ "node", "./handlers/queue-market-order-download-requests.js"]

@@ -1,0 +1,15 @@
+{
+  "name": "aws-infrastructure",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init:core": "mkdir core && cd core && ../node_modules/.bin/cdk init app --language typescript"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cdk": "^2.103.1"
+  }
+}

@@ -31,7 +31,6 @@ export class EveOnlineToolsStack extends cdk.Stack {
 
         new L3.InternalVpcPeeringConstruct(this, 'ControlSystemsToTestVpcPeering', {
             requesterVpc: controlSystemsVpc,
-            sourceAccountId: props.env.account,
             accepterVpc: testVpc,
             accepterOwnerId: props.env.account,
             accepterRegion: props.env.region,

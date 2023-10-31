@@ -1,16 +1,40 @@
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as cdk from 'aws-cdk-lib';
+import * as L2 from './l2';
+import * as L3 from './l3';
 
-export class CoreStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+interface EveOnlineToolsStackProps extends cdk.StackProps {
+    env: {
+        account: string;
+        region: string;
+    };
+}
 
-    // The code that defines your stack goes here
+export class EveOnlineToolsStack extends cdk.Stack {
+    constructor(scope: Construct, id: string, props: EveOnlineToolsStackProps) {
+        super(scope, id, props);
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'CoreQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
-  }
+        const controlSystemsVpc = new L2.EveOnlineToolsVpc(this, 'ControlSystemsVpc', {
+            cidrBlock: '10.100.0.0/16',
+            vpcName: 'ControlSystemsVpc',
+        });
+
+        const testVpc = new L2.EveOnlineToolsVpc(this, 'TestVpc', {
+            cidrBlock: '10.110.0.0/16',
+            vpcName: 'TestVpc',
+        });
+
+        const prodVpc = new L2.EveOnlineToolsVpc(this, 'ProdVpc', {
+            cidrBlock: '10.120.0.0/16',
+            vpcName: 'ProdVpc',
+        });
+
+        new L3.InternalVpcPeeringConstruct(this, 'ControlSystemsToTestVpcPeering', {
+            requesterVpc: controlSystemsVpc,
+            sourceAccountId: props.env.account,
+            accepterVpc: testVpc,
+            accepterOwnerId: props.env.account,
+            accepterRegion: props.env.region,
+        });
+    }
 }

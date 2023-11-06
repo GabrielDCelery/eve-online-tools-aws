@@ -16,8 +16,7 @@ export class EveOnlineToolsVpcConstruct extends Construct {
     constructor(scope: Construct, id: string, props: EveOnlineToolsVpcConstructProps) {
         super(scope, id);
         const vpc = this.createVpc({ props });
-        // this.createCustomNATGateway({ vpc, props });
-        this.createCustomNATGatewayV2({ vpc, props });
+        this.createCustomNATGateway({ vpc, props });
 
         this.vpc = vpc;
     }
@@ -50,45 +49,7 @@ export class EveOnlineToolsVpcConstruct extends Construct {
         return vpc;
     }
 
-    private createCustomNATGateway({ vpc }: { vpc: ec2.Vpc; props: EveOnlineToolsVpcConstructProps }) {
-        const natGatewaySecurityGroup = new ec2.SecurityGroup(this, 'VpcNatGatewaySecurityGroup', {
-            vpc: vpc,
-            description: 'Custom Vpc Nat gateway security group',
-            allowAllOutbound: false,
-        });
-
-        vpc.privateSubnets.forEach((privateSubnet) => {
-            natGatewaySecurityGroup.addIngressRule(ec2.Peer.ipv4(privateSubnet.ipv4CidrBlock), ec2.Port.tcp(80));
-            natGatewaySecurityGroup.addIngressRule(ec2.Peer.ipv4(privateSubnet.ipv4CidrBlock), ec2.Port.tcp(443));
-        });
-
-        natGatewaySecurityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
-        natGatewaySecurityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
-
-        const ec2Instance = new ec2.Instance(this, `VpcNatGateway`, {
-            vpc: vpc,
-            instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
-            machineImage: ec2.MachineImage.genericLinux({
-                'eu-west-2': 'ami-02719b84cb731adfa',
-            }),
-            sourceDestCheck: false,
-            associatePublicIpAddress: true,
-            vpcSubnets: {
-                subnetType: ec2.SubnetType.PUBLIC,
-            },
-            availabilityZone: vpc.availabilityZones[0],
-            securityGroup: natGatewaySecurityGroup,
-        });
-
-        new ec2.CfnRoute(this, `VpcPrivateSubnetNatGatewayRoute`, {
-            routeTableId: vpc.privateSubnets[0].routeTable.routeTableId,
-            destinationCidrBlock: '0.0.0.0/0',
-
-            instanceId: ec2Instance.instanceId,
-        });
-    }
-
-    private createCustomNATGatewayV2({ vpc, props }: { vpc: ec2.Vpc; props: EveOnlineToolsVpcConstructProps }) {
+    private createCustomNATGateway({ vpc, props }: { vpc: ec2.Vpc; props: EveOnlineToolsVpcConstructProps }) {
         const natGatewaySecurityGroup = new ec2.SecurityGroup(this, 'VpcNatGatewaySecurityGroup', {
             vpc: vpc,
             description: 'Custom Vpc Nat gateway security group',

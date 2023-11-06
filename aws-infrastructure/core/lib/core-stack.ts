@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
-import * as L2 from './l2';
 import * as L3 from './l3';
 
 interface EveOnlineToolsStackProps extends cdk.StackProps {
@@ -14,24 +13,34 @@ export class EveOnlineToolsStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props: EveOnlineToolsStackProps) {
         super(scope, id, props);
 
-        const controlSystemsVpc = new L2.EveOnlineToolsVpc(this, 'ControlSystemsVpc', {
+        const { vpc: controlSystemsVpc } = new L3.EveOnlineToolsVpcConstruct(this, 'ControlSystemsVpcContruct', {
             cidrBlock: '10.100.0.0/16',
-            vpcName: 'ControlSystemsVpc',
+            vpcName: 'controlSystemsVpc',
+            vpcRegion: props.env.region,
         });
 
-        const testVpc = new L2.EveOnlineToolsVpc(this, 'TestVpc', {
+        const { vpc: testVpc } = new L3.EveOnlineToolsVpcConstruct(this, 'TestVpcConstruct', {
             cidrBlock: '10.110.0.0/16',
-            vpcName: 'TestVpc',
+            vpcName: 'testVpc',
+            vpcRegion: props.env.region,
         });
 
-        const prodVpc = new L2.EveOnlineToolsVpc(this, 'ProdVpc', {
+        const { vpc: prodVpc } = new L3.EveOnlineToolsVpcConstruct(this, 'ProdVpcConstruct', {
             cidrBlock: '10.120.0.0/16',
-            vpcName: 'ProdVpc',
+            vpcName: 'prodVpc',
+            vpcRegion: props.env.region,
         });
 
         new L3.InternalVpcPeeringConstruct(this, 'ControlSystemsToTestVpcPeering', {
             requesterVpc: controlSystemsVpc,
             accepterVpc: testVpc,
+            accepterOwnerId: props.env.account,
+            accepterRegion: props.env.region,
+        });
+
+        new L3.InternalVpcPeeringConstruct(this, 'ControlSystemsToProdVpcPeering', {
+            requesterVpc: controlSystemsVpc,
+            accepterVpc: prodVpc,
             accepterOwnerId: props.env.account,
             accepterRegion: props.env.region,
         });

@@ -66,7 +66,6 @@ export class InternalVpcPeeringConstruct extends Construct {
         const onDelete: AwsSdkCall = {
             service: 'EC2',
             action: 'modifyVpcPeeringConnectionOptions',
-
             parameters: {
                 VpcPeeringConnectionId: peeringConnection.ref,
                 AccepterPeeringConnectionOptions: {

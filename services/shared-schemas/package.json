@@ -1,0 +1,15 @@
+{
+  "name": "shared-schemas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate:typescript": "node ./src/generate-typescript-types.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-schema-to-typescript": "^13.1.1"
+  }
+}

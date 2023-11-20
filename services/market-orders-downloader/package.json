@@ -12,7 +12,7 @@
     "pre-commit:test": "npm run test",
     "pre-commit:prettier": "./node_modules/.bin/prettier --write .",
     "pre-commit": "npm run pre-commit:lint && npm run pre-commit:tsc && npm run pre-commit:test && npm run pre-commit:prettier",
-    "generate-types": "node ./dev/data-types-generator.js"
+    "pull-generated-types": "cp ../shared-schemas/generated/* ./src/data-types/generated"
   },
   "author": "",
   "license": "ISC",

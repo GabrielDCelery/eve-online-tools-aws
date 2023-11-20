@@ -5,11 +5,11 @@ import Bluebird from 'bluebird';
 type DownloadSectorMarketOrdersRequest = { sectorID: number };
 
 export class EVEMarketOrdersDownloader {
-    private sqsMessageRetriever: SQSMessageRetriever;
+    private eveSectorMarketOrdersRequestsRetriever: SQSMessageRetriever<DownloadSectorMarketOrdersRequest>;
     private eveSectorMarketOrdersDownloader: EVESectorMarketOrdersDownloader;
 
     constructor({ region, sqsQueueUrl, marketOrdersSaveFolder }: { region: string; sqsQueueUrl: string; marketOrdersSaveFolder: string }) {
-        this.sqsMessageRetriever = new SQSMessageRetriever({ region, sqsQueueUrl });
+        this.eveSectorMarketOrdersRequestsRetriever = new SQSMessageRetriever({ region, sqsQueueUrl });
         this.eveSectorMarketOrdersDownloader = new EVESectorMarketOrdersDownloader({ marketOrdersSaveFolder });
     }
 
@@ -17,7 +17,7 @@ export class EVEMarketOrdersDownloader {
         let keepRunning = true;
 
         while (keepRunning) {
-            const sqsRequests = await this.sqsMessageRetriever.getNextBatchOfRequestsFromQueue<DownloadSectorMarketOrdersRequest>();
+            const sqsRequests = await this.eveSectorMarketOrdersRequestsRetriever.getNextBatchOfRequestsFromQueue();
 
             if (sqsRequests.length === 0) {
                 keepRunning = false;
@@ -40,7 +40,7 @@ export class EVEMarketOrdersDownloader {
                 { concurrency: 3 }
             );
 
-            await this.sqsMessageRetriever.removeRequestsFromQueue({ sqsRequests: sqsRequestsSuccessfullyProcessed });
+            await this.eveSectorMarketOrdersRequestsRetriever.removeRequestsFromQueue({ sqsRequests: sqsRequestsSuccessfullyProcessed });
         }
     };
 }

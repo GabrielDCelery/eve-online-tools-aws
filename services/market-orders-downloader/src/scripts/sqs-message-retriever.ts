@@ -8,7 +8,7 @@ export type SQSRequest = {
 
 type CustomSQSRequest<T> = SQSRequest & { payload: T };
 
-export class SQSMessageRetriever {
+export class SQSMessageRetriever<T> {
     private sqsClient: SQSClient;
     private sqsQueueUrl: string;
 
@@ -17,7 +17,7 @@ export class SQSMessageRetriever {
         this.sqsQueueUrl = sqsQueueUrl;
     }
 
-    getNextBatchOfRequestsFromQueue = async <T>(): Promise<CustomSQSRequest<T>[]> => {
+    getNextBatchOfRequestsFromQueue = async (): Promise<CustomSQSRequest<T>[]> => {
         const command = new ReceiveMessageCommand({
             QueueUrl: this.sqsQueueUrl,
             MaxNumberOfMessages: 5,
@@ -68,12 +68,11 @@ export class SQSMessageRetriever {
     };
 
     sendMessageToQueue = async ({ message }: { message: { MessageBody: string; MessageAttributes?: Record<string, MessageAttributeValue> } }) => {
-        message.MessageAttributes;
         const command = new SendMessageCommand({
             QueueUrl: this.sqsQueueUrl,
-            DelaySeconds: 10,
-            MessageAttributes: message.MessageAttributes,
+            DelaySeconds: 0,
             MessageBody: message.MessageBody,
+            ...(message.MessageAttributes ? { MessageAtributes: message.MessageAttributes } : {}),
         });
 
         await this.sqsClient.send(command);

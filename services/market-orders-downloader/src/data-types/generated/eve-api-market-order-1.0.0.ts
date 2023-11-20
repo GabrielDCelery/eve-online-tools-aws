@@ -9,16 +9,16 @@
  * Single market order details; version 1-0-0; last updated 2023-10-29
  */
 export interface EveAPI__MarketOrder__1_0_0 {
-    duration: number;
-    is_buy_order: boolean;
-    issued: string;
-    location_id: number;
-    min_volume: number;
-    order_id: number;
-    price: number;
-    range: string;
-    system_id: number;
-    type_id: number;
-    volume_remain: number;
-    volume_total: number;
+  duration: number;
+  is_buy_order: boolean;
+  issued: string;
+  location_id: number;
+  min_volume: number;
+  order_id: number;
+  price: number;
+  range: string;
+  system_id: number;
+  type_id: number;
+  volume_remain: number;
+  volume_total: number;
 }

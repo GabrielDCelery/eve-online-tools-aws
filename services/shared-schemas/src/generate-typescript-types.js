@@ -34,5 +34,3 @@ const fs = require("fs");
     );
   }
 })();
-
-// or, compile a JS object

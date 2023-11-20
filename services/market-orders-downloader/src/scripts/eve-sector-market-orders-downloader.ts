@@ -4,7 +4,7 @@ import { utc } from 'moment';
 import path from 'path';
 import { stringify } from 'csv-stringify/sync';
 import childProcess from 'child_process';
-import { EveAPI__MarketOrder__1_0_0 } from '../data-types/generated/eve-api-market-order/eve-api-market-order-1.0.0';
+import { EveAPI__MarketOrder__1_0_0 } from '../data-types/generated/eve-api-market-order-1.0.0';
 
 export class EVESectorMarketOrdersDownloader {
     private marketOrdersSaveFolder: string;

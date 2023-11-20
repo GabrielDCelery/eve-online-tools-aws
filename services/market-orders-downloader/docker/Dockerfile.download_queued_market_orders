@@ -16,4 +16,4 @@ COPY --from=transpiler /usr/app/dist/ ./
 COPY --from=dependency_installer /usr/app/ ./
 EXPOSE 8080
 
-CMD [ "node", "./handlers/download-market-orders.js"]
+CMD [ "node", "./handlers/download-queued-market-orders.js"]

@@ -1,8 +1,8 @@
 {
-  "name": "dev-tools",
+  "name": "eve-market-orders-downloader",
   "version": "0.1.0",
   "bin": {
-    "dev-tools": "bin/dev-tools.js"
+    "eve-market-orders-downloader": "bin/eve-market-orders-downloader.js"
   },
   "scripts": {
     "build": "tsc",

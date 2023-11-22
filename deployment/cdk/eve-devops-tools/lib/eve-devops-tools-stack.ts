@@ -7,12 +7,12 @@ export class EveDevopsToolsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const repository = new aws_ecr.Repository(
+    new aws_ecr.Repository(
       this,
-      "EveMarketOrdersDownloaderRepository",
+      "EveMarketOrdersDownloaderDownloadQueuedMarketOrdersRepository",
       {
         imageScanOnPush: false,
-        imageTagMutability: aws_ecr.TagMutability.IMMUTABLE,
+        imageTagMutability: aws_ecr.TagMutability.MUTABLE,
         autoDeleteImages: true,
         encryption: aws_ecr.RepositoryEncryption.AES_256,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -20,6 +20,21 @@ export class EveDevopsToolsStack extends cdk.Stack {
           "eve-market-orders-downloader/download-queued-market-orders",
       }
     );
+
+    new aws_ecr.Repository(
+      this,
+      "EveMarketOrdersDownloaderQueueMarketOrdersForDownloadRepository",
+      {
+        imageScanOnPush: false,
+        imageTagMutability: aws_ecr.TagMutability.MUTABLE,
+        autoDeleteImages: true,
+        encryption: aws_ecr.RepositoryEncryption.AES_256,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        repositoryName:
+          "eve-market-orders-downloader/queue-market-orders-for-download",
+      }
+    );
+
     /*
     new cdk.CfnOutput(this, "EveMarketOrdersDownloaderRepositoryCfnOutput", {
       exportName: "EveMarketOrdersRepository",

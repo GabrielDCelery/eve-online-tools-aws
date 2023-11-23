@@ -8,9 +8,9 @@ export class EVEMarketOrdersDownloader {
     private eveSectorMarketOrdersRequestsRetriever: SQSMessageRetriever<DownloadSectorMarketOrdersRequest>;
     private eveSectorMarketOrdersDownloader: EVESectorMarketOrdersDownloader;
 
-    constructor({ region, sqsQueueUrl, marketOrdersSaveFolder }: { region: string; sqsQueueUrl: string; marketOrdersSaveFolder: string }) {
+    constructor({ region, sqsQueueUrl, s3BucketName }: { region: string; sqsQueueUrl: string; s3BucketName: string }) {
         this.eveSectorMarketOrdersRequestsRetriever = new SQSMessageRetriever({ region, sqsQueueUrl });
-        this.eveSectorMarketOrdersDownloader = new EVESectorMarketOrdersDownloader({ marketOrdersSaveFolder });
+        this.eveSectorMarketOrdersDownloader = new EVESectorMarketOrdersDownloader({ region, s3BucketName });
     }
 
     run = async () => {

@@ -5,12 +5,15 @@ import path from 'path';
 import { stringify } from 'csv-stringify/sync';
 import childProcess from 'child_process';
 import { EveAPI__MarketOrder__1_0_0 } from '../data-types/generated/eve-api-market-order-1.0.0';
+import { PutObjectCommand, S3Client, ServerSideEncryption } from '@aws-sdk/client-s3';
 
 export class EVESectorMarketOrdersDownloader {
-    private marketOrdersSaveFolder: string;
+    private s3Client: S3Client;
+    private s3BucketName: string;
 
-    constructor({ marketOrdersSaveFolder }: { marketOrdersSaveFolder: string }) {
-        this.marketOrdersSaveFolder = marketOrdersSaveFolder;
+    constructor({ region, s3BucketName }: { region: string; s3BucketName: string }) {
+        this.s3Client = new S3Client({ region });
+        this.s3BucketName = s3BucketName;
     }
 
     private getMarketOrdersForSectorAndPage = async ({ sectorID, page }: { sectorID: number; page: number }): Promise<EveAPI__MarketOrder__1_0_0[]> => {
@@ -53,10 +56,20 @@ export class EVESectorMarketOrdersDownloader {
             keepRunning = marketOrders.length !== 0;
         }
 
-        const zippedFileName = `${fileBaseName}.tar.gz`;
-        const zippedFilePath = path.join(tempFolder, zippedFileName);
+        // const zippedFileName = `${fileBaseName}.tar.gz`;
+        // const zippedFilePath = path.join(tempFolder, zippedFileName);
 
-        childProcess.execSync(`tar czf ${zippedFilePath} -C ${tempFolder} ${fileName}`);
-        childProcess.execSync(`cp ${zippedFilePath} ${path.join(this.marketOrdersSaveFolder, zippedFileName)}`);
+        // childProcess.execSync(`tar czf ${zippedFilePath} -C ${tempFolder} ${fileName}`);
+
+        await this.s3Client.send(
+            new PutObjectCommand({
+                Bucket: this.s3BucketName,
+                Key: fileBaseName,
+                Body: Buffer.from(fs.readFileSync(filePath)),
+                ServerSideEncryption: ServerSideEncryption.AES256,
+            })
+        );
+
+        // childProcess.execSync(`cp ${zippedFilePath} ${path.join(this.marketOrdersSaveFolder, zippedFileName)}`);
     };
 }

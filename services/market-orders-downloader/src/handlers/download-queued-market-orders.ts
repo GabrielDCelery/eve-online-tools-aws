@@ -6,9 +6,9 @@ const env = new EnvVariableRetriever();
 
 const region = env.validateAndGetEnvVariable({ name: 'AWS_REGION' });
 const sqsQueueUrl = env.validateAndGetEnvVariable({ name: 'SQS_QUEUE_URL' });
-const marketOrdersSaveFolder = env.validateAndGetEnvVariable({ name: 'MARKET_ORDERS_SAVE_FOLDER' });
+const s3BucketName = env.validateAndGetEnvVariable({ name: 'MARKET_ORDERS_S3_BUCKET' });
 
-const marketOrdersDownloader = new EVEMarketOrdersDownloader({ region, sqsQueueUrl, marketOrdersSaveFolder });
+const marketOrdersDownloader = new EVEMarketOrdersDownloader({ region, sqsQueueUrl, s3BucketName });
 
 const app = express();
 
